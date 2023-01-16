@@ -6,11 +6,11 @@ namespace small_api.Data
 {
 	public class MyDbContext : DbContext
 	{
-		public MyDbContext(DbContextOptions<DbContext> options) : base(options)
+		public MyDbContext(DbContextOptions<MyDbContext> options) : base(options)
 		{
 		}
 
-		DbSet<Website> websites { get; set; } = null!;
+		public DbSet<Website> websites { get; set; } = null!;
 	}
 }
 

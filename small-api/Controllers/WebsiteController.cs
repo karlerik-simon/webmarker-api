@@ -13,7 +13,12 @@ namespace small_api.Controllers
     [Route("[controller]")]
     public class WebsiteController : ControllerBase
     {
-        protected readonly MyDbContext db;
+        protected readonly MyDbContext _db;
+
+        public WebsiteController(MyDbContext db)
+        {
+            _db = db;
+        }
 
         [HttpGet]
         public ActionResult Get()
@@ -29,20 +34,27 @@ namespace small_api.Controllers
                 return NotFound();
             }
 
-            return new Website
+            IQueryable<Website> website = _db.websites.AsQueryable().Where(x => x.Id == id);
+
+            if (website.Count() == 0)
             {
-                Id = id,
-                Name = "Microsoft",
-                Url = "https://microsoft.com",
-                Category = "Favorites",
-                Favicon = "var/www/images/26342hdfbcn23.ico"
-            };
+                return NotFound("No website found with this index");
+            }
+
+            return Ok(website.First());
         }
 
         [HttpPost]
         public ActionResult Post(Website website)
         {
-            return NotFound();
+            if (website == null)
+            {
+                return NotFound();
+            }
+
+            _db.Add(website);
+            _db.SaveChanges();
+            return Ok("New website posted");
         }
 
         [HttpPut]
